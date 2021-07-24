@@ -1,16 +1,35 @@
+/**
+ * Error handlers
+ * @module controllers/errorController
+ */
 const AppError = require('../utils/appError');
 
+/**
+ * Handle Cast Errors
+ * @param {*} err
+ * @returns {AppError}
+ */
 const handleCastErrorDB = (err) => {
   const message = `Invalid ${err.path}: ${err.value}`;
   return new AppError(message, 400);
 };
 
+/**
+ * Handle duplicate value error
+ * @param {*} err
+ * @returns {AppError}
+ */
 const handleDuplicateErrorDB = (err) => {
   const message = `Duplicate value: ${err.keyValue.name}, name must be unique`;
 
   return new AppError(message, 400);
 };
 
+/**
+ * Handle validation error from database
+ * @param {*} err
+ * @returns {AppError}
+ */
 const handleValidationErrorDB = (err) => {
   //   let value = '';
   //   let name = '';
@@ -28,12 +47,25 @@ const handleValidationErrorDB = (err) => {
   return new AppError(message, 400);
 };
 
+/**
+ * Handle JWT Invalid token error
+ * @returns {AppError}
+ */
 const handleJWTError = () =>
   new AppError('Invalid token, Please login again', 401);
 
+/**
+ * Handle expired JWT error
+ * @returns {AppError}
+ */
 const handleJWTExpiredError = () =>
   new AppError('Expired token, kindly login again', 401);
 
+/**
+ * Send error in development
+ * @param {*} err
+ * @param {*} res
+ */
 const sendErrorDev = (err, res) => {
   res.status(err.statusCode).json({
     // status: err.status,
@@ -43,6 +75,11 @@ const sendErrorDev = (err, res) => {
   });
 };
 
+/**
+ * Send error in production
+ * @param {*} err
+ * @param {*} res
+ */
 const sendErrorProd = (err, res) => {
   // Operational, trusted error: send details to the client
   if (err.isOperational) {
@@ -64,6 +101,13 @@ const sendErrorProd = (err, res) => {
   }
 };
 
+/**
+ * Export error handling module
+ * @param {*} err
+ * @param {*} req
+ * @param {*} res
+ * @param {*} next
+ */
 module.exports = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
