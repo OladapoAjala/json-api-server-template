@@ -1,3 +1,9 @@
+/**
+ * This file contains the setup required to:
+ *    1. Connect to a mongodb database.
+ *    2. Start an express server.
+ *    3. Handle uncaughtException & unhandledRejection errors.
+ */
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 
@@ -14,12 +20,12 @@ process.on('uncaughtException', (err) => {
 dotenv.config({ path: './config.env' });
 
 // Set mongodb url (localhost connects to mongodb hosted locally)
-// const DB = process.env.DATABASE.replace(
-//   '<PASSWORD>',
-//   process.env.DATABASE_PASSWORD
-// );
-const DB =
-  'mongodb://localhost:27017/natours?readPreference=primary&appname=MongoDB%20Compass&ssl=false';
+const DB = process.env.DATABASE.replace(
+  '<PASSWORD>',
+  process.env.DATABASE_PASSWORD
+);
+// const DB =
+//   'mongodb://localhost:27017/natours?readPreference=primary&appname=MongoDB%20Compass&ssl=false';
 
 // Connect to mongodb
 mongoose.connect(DB, {
@@ -39,6 +45,7 @@ db.once('open', () => {
 // Import express application
 const app = require('./app');
 
+// Start server
 const port = process.env.PORT || 3000;
 const server = app.listen(port, () => {
   console.log(`App running on port ${port}`);
