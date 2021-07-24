@@ -1,1 +1,1 @@
-#template-for-building-json-apis-with-express-and-mongoose
+#template-for-building-RESTful-json-apis-with-express-and-mongoose
