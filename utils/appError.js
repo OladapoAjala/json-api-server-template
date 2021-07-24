@@ -1,7 +1,7 @@
-/**********
+/**
  * Error handling class (inherits from node error class)
  * This class handles all errors tagged operational errors
- **********/
+ */
 class AppError extends Error {
   constructor(message, statusCode) {
     super(message);
