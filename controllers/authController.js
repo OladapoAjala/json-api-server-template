@@ -1,3 +1,13 @@
+/**
+ * This file contains route handlers to:
+ *    1. User Sign Up
+ *    2. User Log In
+ *    3. Protecting routes against unauthorized users
+ *    4. User forgot password
+ *    5. Reset password
+ *    6. Update user password
+ * @module controllers/authController
+ */
 const crypto = require('crypto');
 const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
@@ -7,11 +17,22 @@ const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const sendEmail = require('../utils/email');
 
+/**
+ *
+ * @param {number} id
+ * @returns {number}
+ */
 const signToken = (id) =>
   jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 
+/**
+ *
+ * @param {User} user
+ * @param {number} statusCode
+ * @param {*} res
+ */
 const createAndSendToken = (user, statusCode, res) => {
   const token = signToken(user._id);
   const cookieOptions = {
@@ -39,6 +60,9 @@ const createAndSendToken = (user, statusCode, res) => {
   });
 };
 
+/**
+ * User Sign Up
+ */
 exports.signup = catchAsync(async (req, res, next) => {
   const newUser = await User.create({
     name: req.body.name,
@@ -51,6 +75,9 @@ exports.signup = catchAsync(async (req, res, next) => {
   createAndSendToken(newUser, 201, res);
 });
 
+/**
+ * User Log In
+ */
 exports.login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
@@ -72,6 +99,9 @@ exports.login = catchAsync(async (req, res, next) => {
   });
 });
 
+/**
+ * Protect specific routes from unauthorized users
+ */
 exports.protect = catchAsync(async (req, res, next) => {
   let token;
   if (
@@ -110,6 +140,11 @@ exports.protect = catchAsync(async (req, res, next) => {
   next();
 });
 
+/**
+ *
+ * @param  {...any} roles
+ * @returns {function}
+ */
 exports.restrictTo = (...roles) =>
   catchAsync(async (req, res, next) => {
     if (!roles.includes(req.user.role)) {
@@ -121,6 +156,9 @@ exports.restrictTo = (...roles) =>
     next();
   });
 
+/**
+ * Route handler for user forgot password
+ */
 exports.forgotPassword = catchAsync(async (req, res, next) => {
   // 1) Get user based on email provided
   const user = await User.findOne({ email: req.body.email });
@@ -165,6 +203,9 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   }
 });
 
+/**
+ * Route handler for resetting user password
+ */
 exports.resetPassword = catchAsync(async (req, res, next) => {
   const hashedToken = crypto
     .createHash('sha256')
@@ -194,6 +235,9 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   });
 });
 
+/**
+ * Update user password
+ */
 exports.updatePassword = catchAsync(async (req, res, next) => {
   const { password, newPassword, newPasswordConfirm } = req.body;
 
